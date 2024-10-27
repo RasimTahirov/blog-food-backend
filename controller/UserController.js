@@ -16,18 +16,22 @@ export const register = async (req, res) => {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-
       const user = new User({ name, email, password: hashedPassword });
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
       await user.save();
 
       res.status(201).json({
         message: "Пользователь зарегистрирован",
         token,
-        userId: user_id,
+        userId: user._id,
       });
     } catch (error) {
       res.status(500).json({
         message: "Не удалось зарегистрироваться",
+        error,
       });
     }
   }
@@ -59,6 +63,7 @@ export const login = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Не удалось войти",
+      error,
     });
   }
 };
