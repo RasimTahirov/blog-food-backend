@@ -1,4 +1,4 @@
-import bctypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import User from "../models/User.js";
@@ -15,13 +15,15 @@ export const register = async (req, res) => {
         });
       }
 
-      const hashedPassword = await bctypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       const user = new User({ name, email, password: hashedPassword });
       await user.save();
 
       res.status(201).json({
         message: "Пользователь зарегистрирован",
+        token,
+        userId: user_id,
       });
     } catch (error) {
       res.status(500).json({
@@ -42,7 +44,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const isPasswordValid = await bctypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({
         message: "Неверный логин или пароль",
