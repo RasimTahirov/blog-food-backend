@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.js";
+import blogRoutes from './routes/blog.js'
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ mongoose
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/post", blogRoutes)
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен. http://localhost:${PORT}`);
