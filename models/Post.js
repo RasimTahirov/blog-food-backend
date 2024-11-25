@@ -8,43 +8,88 @@ const postSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  image: {
-    type: String,
-    required: true,
-  },
-  ingredients: [
-    {
-      name: { type: String, required: true },
-      amount: { type: Number, required: true },
-      unit: { type: String, required: true },
-    },
-  ],
-  steps: [
-    {
-      description: { type: String, required: true },
-      image: { type: String },
-    },
-  ],
-  cookTime: {
-    type: Number,
-    required: true,
-  },
-  calories: {
-    type: Number,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
   categories: {
     type: String,
     required: true,
   },
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+  ingredients: {
+    type: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        unit: {
+          type: String,
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     required: true,
+    validate: {
+      validator: function (v) {
+        return v && v.length > 0;
+      },
+      message: "Поле ingredients должно содержать хотя бы один ингредиент",
+    },
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  steps: {
+    type: [
+      {
+        description: {
+          type: String,
+          required: true,
+        },
+        image: {
+          type: String,
+          required: true,
+        },
+        stepNumber: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    required: true,
+    validate: {
+      validator: function (s) {
+        return s && s.length > 0;
+      },
+      message: "ТЕСТ!!!!!",
+    },
+  },
+  cookTime: {
+    type: {
+      hours: {
+        type: Number,
+        required: true,
+      },
+      minutes: {
+        type: Number,
+        required: true,
+      },
+    },
+    required: true,
+  },
+  author: {
+    type: {
+      name: {
+        type: String,
+        required: true
+      },
+      surname: {
+        type: String,
+        required: true
+      }
+    }
   },
 });
 

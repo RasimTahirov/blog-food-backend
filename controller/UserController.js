@@ -6,7 +6,7 @@ import User from "../models/User.js";
 export const register = async (req, res) => {
   {
     try {
-      const { name, email, password } = req.body;
+      const { name, surname, email, password } = req.body;
 
       const extringUser = await User.findOne({ email });
       if (extringUser) {
@@ -16,7 +16,7 @@ export const register = async (req, res) => {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({ name, email, password: hashedPassword });
+      const user = new User({ name, surname, email, password: hashedPassword });
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
@@ -65,6 +65,7 @@ export const login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        surname: user.surname
       },
     });
   } catch (error) {

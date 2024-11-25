@@ -26,6 +26,32 @@ export const getAllPost = async (req, res) => {
   }
 };
 
+export const getCategotyPost = async (req, res) => {
+  try {
+    const categories = await Post.distinct("categories");
+
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({
+      message: "Не удалось получить категории",
+      error,
+    });
+  }
+};
+
+export const getPostsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const posts = await Post.find({ categories: category });
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({
+      message: "Не удалось получить посты по категории",
+      error,
+    });
+  }
+};
+
 export const getOnePost = async (req, res) => {
   try {
     const postId = await Post.findById(req.params.id);

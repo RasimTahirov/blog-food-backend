@@ -5,12 +5,16 @@ import {
   createPost,
   deletePost,
   getAllPost,
+  getCategotyPost,
   getOnePost,
+  getPostsByCategory,
   updatePost,
 } from "../controller/PostController.js";
 
 const router = express.Router();
 
+router.get("/categories", getCategotyPost);
+router.get("/categories/:category", getPostsByCategory);
 router.get("/all", getAllPost);
 router.get("/:id", getOnePost);
 router.post("/create", checkAuth, createPost);
