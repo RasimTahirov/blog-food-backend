@@ -83,15 +83,19 @@ const postSchema = new mongoose.Schema({
     type: {
       name: {
         type: String,
-        required: true
+        required: true,
       },
       surname: {
         type: String,
-        required: true
-      }
-    }
+        required: true,
+      },
+      id: {
+        type: String,
+        required: true,
+      },
+    },
   },
 });
 
-const Post = mongoose.model("Post", postSchema);
-export default Post;
+const Recipe = mongoose.model("Recipe", postSchema);
+export default Recipe;

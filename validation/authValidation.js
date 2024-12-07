@@ -4,7 +4,7 @@ export const registerValidation = [
   body("name").notEmpty().withMessage("Имя обязательное"),
   body("email").isEmail().withMessage("Некорректный email"),
   body("password")
-    .isLength({ min: 6 })
+    .isLength({ min: 5 })
     .withMessage("Пароль должен содержать минимум 6 символов"),
 ];
 
