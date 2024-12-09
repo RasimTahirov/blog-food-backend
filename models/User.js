@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  favorites: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }], // массив ObjectId
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

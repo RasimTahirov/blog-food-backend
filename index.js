@@ -7,6 +7,7 @@ import multer from "multer";
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/recipe.js";
 import articleRoutes from "./routes/article.js";
+import favoriteRoutes from "./routes/favorite.js";
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/post", blogRoutes);
 app.use("/api/article", articleRoutes);
+app.use("/api/favorite", favoriteRoutes);
 
 app.post("/upload", upload.single("image"), (req, res) => {
   res.json({

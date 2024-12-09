@@ -7,9 +7,11 @@ export default (req, res, next) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.userId = decoded._id;
+      req.user = { id: decoded.id };
+
       next();
     } catch (e) {
+      console.error("Ошибка токена:", e);
       return res.status(403).json({
         message: "Нет доступа",
       });
