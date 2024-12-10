@@ -21,7 +21,7 @@ mongoose
   .catch((err) => console.error("Ошибка", err));
 
 const s3Client = new S3Client({
-  endpoint: "https://uploadsfood.s3.selectel.ru",
+  endpoint: "https://s3.gis-1.storage.selcloud.ru",
   region: "gis-1",
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -34,7 +34,7 @@ const upload = multer({ storage });
 
 app.use(
   cors({
-    origin: "https://github.com/RasimTahirov/blog-food-backend.git",
+    origin: "https://blog-food-frontend.vercel.app/",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -60,12 +60,14 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     Key: `${Date.now()}-${file.originalname}`,
     Body: file.buffer,
     ContentType: file.mimetype,
+    ACL: 'public-read'
   };
 
   try {
     const command = new PutObjectCommand(params);
-    const data = await s3Client.send(command);
-    const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.selectel.ru/${params.Key}`;
+    await s3Client.send(command);
+
+    const fileUrl = `${process.env.IMAGE_URL}/${params.Key}`;
 
     res.json({ url: fileUrl });
   } catch (err) {
@@ -73,7 +75,6 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     res.status(500).send("Ошибка при загрузке файла.");
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен. http://localhost:${PORT}`);
