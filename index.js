@@ -21,7 +21,7 @@ mongoose
   .catch((err) => console.error("Ошибка", err));
 
 const s3Client = new S3Client({
-  endpoint: "https://s3.selectel.ru",
+  endpoint: "s3.selectel.ru",
   region: "gis-1",
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
