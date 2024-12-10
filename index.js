@@ -67,7 +67,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     const command = new PutObjectCommand(params);
     await s3Client.send(command);
 
-    const fileUrl = `${params.Key}`;
+    const fileUrl = `${process.env.IMAGE_URL}/${params.Key}`;
 
     res.json({ url: fileUrl });
   } catch (err) {
