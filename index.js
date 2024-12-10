@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import multer from "multer";
+import AWS from "aws-sdk";
 
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/recipe.js";
@@ -19,16 +20,26 @@ mongoose
   .then(() => console.log("Подключено"))
   .catch((err) => console.error("Ошибка", err));
 
-const storage = multer.diskStorage({
-  destination: (_, __, cb) => {
-    cb(null, "uploads");
-  },
-  filename: (_, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const extension = file.originalname.split(".").pop();
-    cb(null, `${file.fieldname}-${uniqueSuffix}.${extension}`);
-  },
+const s3 = new AWS.S3({
+  endpoint: "https://s3.selectel.ru",
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: "gis-1",
+  signatureVersion: "v4",
 });
+
+const storage = multer.memoryStorage();
+
+// const storage = multer.diskStorage({
+//   destination: (_, __, cb) => {
+//     cb(null, "uploads");
+//   },
+//   filename: (_, file, cb) => {
+//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//     const extension = file.originalname.split(".").pop();
+//     cb(null, `${file.fieldname}-${uniqueSuffix}.${extension}`);
+//   },
+// });
 
 const upload = multer({ storage });
 
@@ -49,8 +60,28 @@ app.use("/api/article", articleRoutes);
 app.use("/api/favorite", favoriteRoutes);
 
 app.post("/upload", upload.single("image"), (req, res) => {
-  res.json({
-    url: `/upload/${req.file.filename}`,
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).send("No file uploaded.");
+  }
+
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: `${Date.now()}-${file.originalname}`,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  };
+
+  s3.upload(params, (err, data) => {
+    if (err) {
+      console.error("Ошибка при загрузке в S3:", err);
+      return res.status(500).send("Ошибка при загрузке файла.");
+    }
+
+    res.json({
+      url: data.Location,
+    });
   });
 });
 
