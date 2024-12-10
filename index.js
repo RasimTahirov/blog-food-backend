@@ -25,21 +25,11 @@ const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: "gis-1",
-  signatureVersion: "v4",
+  s3ForcePathStyle: true
 });
 
 const storage = multer.memoryStorage();
 
-// const storage = multer.diskStorage({
-//   destination: (_, __, cb) => {
-//     cb(null, "uploads");
-//   },
-//   filename: (_, file, cb) => {
-//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-//     const extension = file.originalname.split(".").pop();
-//     cb(null, `${file.fieldname}-${uniqueSuffix}.${extension}`);
-//   },
-// });
 
 const upload = multer({ storage });
 
