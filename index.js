@@ -67,7 +67,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     const command = new PutObjectCommand(params);
     await s3Client.send(command);
 
-    const fileUrl = `https://s3.selectel.ru/${process.env.AWS_BUCKET_NAME}/${params.Key}`;
+    const fileUrl = `${params.Key}`;
 
     res.json({ url: fileUrl });
   } catch (err) {
