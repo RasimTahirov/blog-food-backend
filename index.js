@@ -34,7 +34,7 @@ const upload = multer({ storage });
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://github.com/RasimTahirov/blog-food-backend.git",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
