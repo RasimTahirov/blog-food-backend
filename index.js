@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import multer from "multer";
-import AWS from "aws-sdk";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 import authRoutes from "./routes/auth.js";
