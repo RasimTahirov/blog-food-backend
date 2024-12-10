@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import multer from "multer";
 import AWS from "aws-sdk";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/recipe.js";
@@ -20,17 +21,16 @@ mongoose
   .then(() => console.log("Подключено"))
   .catch((err) => console.error("Ошибка", err));
 
-const s3 = new AWS.S3({
+const s3Client = new S3Client({
   endpoint: "https://s3.selectel.ru",
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: "gis-1",
-  s3ForcePathStyle: true
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
 });
 
 const storage = multer.memoryStorage();
-
-
 const upload = multer({ storage });
 
 app.use(
@@ -49,7 +49,7 @@ app.use("/api/post", blogRoutes);
 app.use("/api/article", articleRoutes);
 app.use("/api/favorite", favoriteRoutes);
 
-app.post("/upload", upload.single("image"), (req, res) => {
+app.post("/upload", upload.single("image"), async (req, res) => {
   const file = req.file;
 
   if (!file) {
@@ -63,19 +63,18 @@ app.post("/upload", upload.single("image"), (req, res) => {
     ContentType: file.mimetype,
   };
 
-  s3.upload(params, (err, data) => {
-    if (err) {
-      console.error("Ошибка при загрузке в S3:", err);
-      return res.status(500).send("Ошибка при загрузке файла.");
-    }
+  try {
+    const command = new PutObjectCommand(params);
+    const data = await s3Client.send(command);
+    const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.selectel.ru/${params.Key}`;
 
-    res.json({
-      url: data.Location,
-    });
-  });
+    res.json({ url: fileUrl });
+  } catch (err) {
+    console.error("Ошибка при загрузке в S3:", err);
+    res.status(500).send("Ошибка при загрузке файла.");
+  }
 });
 
-app.use("/upload", express.static("uploads"));
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен. http://localhost:${PORT}`);
